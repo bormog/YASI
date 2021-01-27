@@ -85,27 +85,27 @@ class Parser:
         self.move_forward(TokenType.CREATE)
         self.move_forward(TokenType.TABLE)
 
-        table_name = self.token.value
+        table = ast.Table(self.token)
         self.move_forward(TokenType.ID)
 
         self.move_forward(TokenType.LPAREN)
         self.move_forward(TokenType.PRIMARY)
         self.move_forward(TokenType.KEY)
 
-        primary_key = self.token.value
+        primary_key = ast.Column(self.token)
         self.move_forward(TokenType.ID)
 
         columns = []
         while self.token.type == TokenType.COMMA:
             self.move_forward(TokenType.COMMA)
-            column = self.token.value
+            column = ast.Column(self.token)
             self.move_forward(TokenType.ID)
             columns.append(column)
 
         self.move_forward(TokenType.RPAREN)
         self.move_forward(TokenType.SEMICOLON)
 
-        return ast.CreateStatement(table_name, primary_key, columns)
+        return ast.CreateStatement(table, primary_key, columns)
 
     def describe_stmt(self) -> ast.Node:
         """
@@ -114,7 +114,7 @@ class Parser:
         """
 
         self.move_forward(TokenType.DESCRIBE)
-        table = self.token.value
+        table = ast.Table(self.token)
         self.move_forward(TokenType.ID)
         self.move_forward(TokenType.SEMICOLON)
         return ast.DescribeStatement(table=table)
@@ -128,25 +128,25 @@ class Parser:
         self.move_forward(TokenType.INSERT)
         self.move_forward(TokenType.INTO)
 
-        table = self.token.value
+        table = ast.Table(self.token)
         self.move_forward(TokenType.ID)
 
         columns = []
 
         self.move_forward(TokenType.SET)
-        column = self.token.value
+        column = ast.Column(self.token)
         self.move_forward(TokenType.ID)
         self.move_forward(TokenType.EQUALS)
         value = self.value()
-        columns.append((column, value,))
+        columns.append(ast.Assign(left=column, right=value))
 
         while self.token.type == TokenType.COMMA:
             self.move_forward(TokenType.COMMA)
-            column = self.token.value
+            column = ast.Column(self.token)
             self.move_forward(TokenType.ID)
             self.move_forward(TokenType.EQUALS)
             value = self.value()
-            columns.append((column, value,))
+            columns.append(ast.Assign(left=column, right=value))
 
         self.move_forward(TokenType.SEMICOLON)
 
@@ -190,35 +190,35 @@ class Parser:
         if self.token.type == TokenType.ID:
             result = []
 
-            column = self.token.value
+            column = ast.Column(self.token)
             self.move_forward(TokenType.ID)
             result.append(column)
             while self.token.type == TokenType.COMMA:
                 self.move_forward(TokenType.COMMA)
-                column = self.token.value
+                column = ast.Column(self.token)
                 self.move_forward(TokenType.ID)
                 result.append(column)
 
             self.move_forward(TokenType.FROM)
-            table = self.token.value
+            table = ast.Table(self.token)
             self.move_forward(TokenType.ID)
 
             where = []
             if self.token.type == TokenType.WHERE:
                 self.move_forward(TokenType.WHERE)
-                column = self.token.value
+                column = ast.Column(self.token)
                 self.move_forward(TokenType.ID)
                 self.move_forward(TokenType.EQUALS)
                 value = self.value()
-                where.append((column, value,))
+                where.append(ast.Assign(left=column, right=value))
 
                 while self.token.type == TokenType.COMMA:
                     self.move_forward(TokenType.COMMA)
-                    column = self.token.value
+                    column = ast.Column(self.token)
                     self.move_forward(TokenType.ID)
                     self.move_forward(TokenType.EQUALS)
                     value = self.value()
-                    where.append((column, value,))
+                    where.append(ast.Assign(left=column, right=value))
             node = ast.SelectStatement(table=table, result=result, where=where)
         else:
             node = ast.SelectStatement(table=None, result=self.expr(), where=None)
@@ -255,8 +255,3 @@ class Parser:
 
     def parse(self) -> ast.Statements:
         return self.stmt_list()
-        # result = []
-        # while self.token.type != TokenType.EOF:
-        #     res = self.stmt()
-        #     result.append(res)
-        # return result

@@ -16,6 +16,28 @@ class String(Node):
         self.value = token.value
 
 
+class Identifier(Node):
+
+    def __init__(self, token):
+        self.token = token
+        self.name = token.value
+
+
+class Table(Identifier):
+    pass
+
+
+class Column(Identifier):
+    pass
+
+
+class Assign(Node):
+
+    def __init__(self, left: Column, right: any):
+        self.left = left
+        self.right = right
+
+
 class BinaryOperation(Node):
 
     def __init__(self, left, token_type, right):
