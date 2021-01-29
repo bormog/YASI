@@ -1,4 +1,5 @@
 import os
+
 import pandas as pd
 
 
@@ -52,7 +53,8 @@ class Storage:
             return False
         _columns = [primary] + columns
         df = pd.DataFrame(columns=_columns)
-        self._set(table, df).to_csv(self._path(table), index=False)
+        self._set(table, df)
+        self._save(table)
         return self._exists(table)
 
     def describe(self, table: str) -> list:
@@ -94,5 +96,3 @@ class Storage:
         if limit:
             search = search[:limit]
         return search.values.tolist()
-
-

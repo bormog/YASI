@@ -1,5 +1,5 @@
-import nodes
 import lexer
+import nodes
 from tokens import TokenType, Token
 
 
