@@ -9,7 +9,7 @@ if __name__ == '__main__':
     text += "describe foobar;"
     text += "insert into foobar set foo='foo', bar=2, buz=4, foobar=5;"
     text += "select 1 + 1 + 2 * 2 + 3 * (1 - 1);"
-    text += "select foo, bar, buz from foobar where foo='foo', bar=100500;"
+    text += "select foo, bar from foobar where foo='foo', bar=2;"
 
     lex = Lexer(text)
     parser = Parser(lex)

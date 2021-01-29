@@ -1,4 +1,4 @@
-import ast
+import nodes
 import lexer
 from tokens import TokenType, Token
 
@@ -29,7 +29,7 @@ class Parser:
         else:
             raise ParserUnexpectedToken(self.token, token_type)
 
-    def expr(self) -> ast.Node:
+    def expr(self) -> nodes.Node:
         """
         expr -> term ((PLUS | MINUS) term)*
         """
@@ -38,13 +38,13 @@ class Parser:
         while self.token.type in (TokenType.PLUS, TokenType.MINUS):
             if self.token.type == TokenType.PLUS:
                 self.move_forward(TokenType.PLUS)
-                node = ast.BinaryOperation(left=node, token_type=TokenType.PLUS, right=self.term())
+                node = nodes.BinaryOperation(left=node, token_type=TokenType.PLUS, right=self.term())
             elif self.token.type == TokenType.MINUS:
                 self.move_forward(TokenType.MINUS)
-                node = ast.BinaryOperation(left=node, token_type=TokenType.MINUS, right=self.term())
+                node = nodes.BinaryOperation(left=node, token_type=TokenType.MINUS, right=self.term())
         return node
 
-    def term(self) -> ast.Node:
+    def term(self) -> nodes.Node:
         """
         term -> factor ((MUL | DIV) factor)*
         """
@@ -53,19 +53,19 @@ class Parser:
         while self.token.type in (TokenType.MUL, TokenType.DIV):
             if self.token.type == TokenType.MUL:
                 self.move_forward(TokenType.MUL)
-                node = ast.BinaryOperation(left=node, token_type=TokenType.MUL, right=self.factor())
+                node = nodes.BinaryOperation(left=node, token_type=TokenType.MUL, right=self.factor())
             elif self.token.type == TokenType.DIV:
                 self.move_forward(TokenType.DIV)
-                node = ast.BinaryOperation(left=node, token_type=TokenType.DIV, right=self.factor())
+                node = nodes.BinaryOperation(left=node, token_type=TokenType.DIV, right=self.factor())
         return node
 
-    def factor(self) -> ast.Node:
+    def factor(self) -> nodes.Node:
         """
         factor -> INT | LPAREN expr RPAREN
         """
 
         if self.token.type == TokenType.INT:
-            node = ast.Number(self.token)
+            node = nodes.Number(self.token)
             self.move_forward(TokenType.INT)
         elif self.token.type == TokenType.LPAREN:
             self.move_forward(TokenType.LPAREN)
@@ -76,7 +76,7 @@ class Parser:
 
         return node
 
-    def create_stmt(self) -> ast.Node:
+    def create_stmt(self) -> nodes.Node:
         """
         create_stmt -> CREATE TABLE ID LPAREN PRIMARY KEY ID (COMMA ID)* RPAREN SEMICOLON
         Example: create table foobar ( primary key foo, bar, buz ) ;
@@ -85,41 +85,41 @@ class Parser:
         self.move_forward(TokenType.CREATE)
         self.move_forward(TokenType.TABLE)
 
-        table = ast.Table(self.token)
+        table = nodes.Table(self.token)
         self.move_forward(TokenType.ID)
 
         self.move_forward(TokenType.LPAREN)
         self.move_forward(TokenType.PRIMARY)
         self.move_forward(TokenType.KEY)
 
-        primary_key = ast.Column(self.token)
+        primary_key = nodes.Column(self.token)
         self.move_forward(TokenType.ID)
 
         columns = []
         while self.token.type == TokenType.COMMA:
             self.move_forward(TokenType.COMMA)
-            column = ast.Column(self.token)
+            column = nodes.Column(self.token)
             self.move_forward(TokenType.ID)
             columns.append(column)
 
         self.move_forward(TokenType.RPAREN)
         self.move_forward(TokenType.SEMICOLON)
 
-        return ast.CreateStatement(table, primary_key, columns)
+        return nodes.CreateStatement(table, primary_key, columns)
 
-    def describe_stmt(self) -> ast.Node:
+    def describe_stmt(self) -> nodes.Node:
         """
         describe_stmt -> DESCRIBE ID SEMICOLON
         Example: describe foobar;
         """
 
         self.move_forward(TokenType.DESCRIBE)
-        table = ast.Table(self.token)
+        table = nodes.Table(self.token)
         self.move_forward(TokenType.ID)
         self.move_forward(TokenType.SEMICOLON)
-        return ast.DescribeStatement(table=table)
+        return nodes.DescribeStatement(table=table)
 
-    def insert_stmt(self) -> ast.Node:
+    def insert_stmt(self) -> nodes.Node:
         """
         insert_stmt -> INSERT INTO ID SET ID EQUALS value (COMMA ID EQUALS value)* SEMICOLON
         Example: insert into foobar set foo=4, bar='bar', buz=100500;
@@ -128,31 +128,31 @@ class Parser:
         self.move_forward(TokenType.INSERT)
         self.move_forward(TokenType.INTO)
 
-        table = ast.Table(self.token)
+        table = nodes.Table(self.token)
         self.move_forward(TokenType.ID)
 
         assignments = []
 
         self.move_forward(TokenType.SET)
-        column = ast.Column(self.token)
+        column = nodes.Column(self.token)
         self.move_forward(TokenType.ID)
         self.move_forward(TokenType.EQUALS)
         value = self.value()
-        assignments.append(ast.Assign(left=column, right=value))
+        assignments.append(nodes.Assign(left=column, right=value))
 
         while self.token.type == TokenType.COMMA:
             self.move_forward(TokenType.COMMA)
-            column = ast.Column(self.token)
+            column = nodes.Column(self.token)
             self.move_forward(TokenType.ID)
             self.move_forward(TokenType.EQUALS)
             value = self.value()
-            assignments.append(ast.Assign(left=column, right=value))
+            assignments.append(nodes.Assign(left=column, right=value))
 
         self.move_forward(TokenType.SEMICOLON)
 
-        return ast.InsertStatement(table=table, assignments=assignments)
+        return nodes.InsertStatement(table=table, assignments=assignments)
 
-    def value(self) -> ast.Node:
+    def value(self) -> nodes.Node:
         """
         value -> INT | STRING
         Example: 100500
@@ -160,16 +160,16 @@ class Parser:
         """
 
         if self.token.type == TokenType.INT:
-            node = ast.Number(self.token)
+            node = nodes.Number(self.token)
             self.move_forward(TokenType.INT)
         elif self.token.type == TokenType.STRING:
-            node = ast.String(self.token)
+            node = nodes.String(self.token)
             self.move_forward(TokenType.STRING)
         else:
             raise ParserUnexpectedToken(self.token, "%s or %s" % (TokenType.INT, TokenType.STRING))
         return node
 
-    def select_stmt(self) -> ast.Node:
+    def select_stmt(self) -> nodes.Node:
         """
         select_stmt -> SELECT select_expr SEMICOLON
         """
@@ -179,7 +179,7 @@ class Parser:
         self.move_forward(TokenType.SEMICOLON)
         return result
 
-    def select_expr(self) -> ast.Node:
+    def select_expr(self) -> nodes.Node:
         """
         select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS variable)* )*
         Example: select 1+1
@@ -190,41 +190,41 @@ class Parser:
         if self.token.type == TokenType.ID:
             result = []
 
-            column = ast.Column(self.token)
+            column = nodes.Column(self.token)
             self.move_forward(TokenType.ID)
             result.append(column)
             while self.token.type == TokenType.COMMA:
                 self.move_forward(TokenType.COMMA)
-                column = ast.Column(self.token)
+                column = nodes.Column(self.token)
                 self.move_forward(TokenType.ID)
                 result.append(column)
 
             self.move_forward(TokenType.FROM)
-            table = ast.Table(self.token)
+            table = nodes.Table(self.token)
             self.move_forward(TokenType.ID)
 
             where = []
             if self.token.type == TokenType.WHERE:
                 self.move_forward(TokenType.WHERE)
-                column = ast.Column(self.token)
+                column = nodes.Column(self.token)
                 self.move_forward(TokenType.ID)
                 self.move_forward(TokenType.EQUALS)
                 value = self.value()
-                where.append(ast.Assign(left=column, right=value))
+                where.append(nodes.Assign(left=column, right=value))
 
                 while self.token.type == TokenType.COMMA:
                     self.move_forward(TokenType.COMMA)
-                    column = ast.Column(self.token)
+                    column = nodes.Column(self.token)
                     self.move_forward(TokenType.ID)
                     self.move_forward(TokenType.EQUALS)
                     value = self.value()
-                    where.append(ast.Assign(left=column, right=value))
-            node = ast.SelectStatement(table=table, result=result, where=where)
+                    where.append(nodes.Assign(left=column, right=value))
+            node = nodes.SelectStatement(table=table, result=result, where=where)
         else:
-            node = ast.SelectStatement(table=None, result=self.expr(), where=None)
+            node = nodes.SelectStatement(table=None, result=self.expr(), where=None)
         return node
 
-    def stmt(self) -> ast.Node:
+    def stmt(self) -> nodes.Node:
         """
         stmt -> create_stmt | describe_stmt | insert_stmt | select_stmt
         """
@@ -243,7 +243,7 @@ class Parser:
 
         return result
 
-    def stmt_list(self) -> ast.Statements:
+    def stmt_list(self) -> nodes.Statements:
         """
         stmt_list -> stmt (stmt)*
         """
@@ -251,7 +251,7 @@ class Parser:
         while self.token.type != TokenType.EOF:
             res = self.stmt()
             result.append(res)
-        return ast.Statements(result)
+        return nodes.Statements(result)
 
-    def parse(self) -> ast.Statements:
+    def parse(self) -> nodes.Statements:
         return self.stmt_list()
