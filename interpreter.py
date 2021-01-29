@@ -77,11 +77,18 @@ class Interpreter(NodeVisitor):
 
     def visit_insert_statement(self, node):
         table = self.visit(node.table)
-        columns = [self.visit(asignee) for asignee in node.columns]
-        return "insert into table %s, columns = %s" % (table, columns)
+        assignments = [self.visit(asignee) for asignee in node.assignments]
+        return "insert into table %s, columns = %s" % (table, assignments)
 
     def visit_select_statement(self, node):
-        return "select from %s, result = %s, where = %s" % (node.table, node.result, node.where)
+        print(node.result)
+        if isinstance(node.result, ast.BinaryOperation):
+            return self.visit(node.result)
+        else:
+            table = self.visit(node.table)
+            result = [self.visit(column) for column in node.result]
+            where = [self.visit(asignee) for asignee in node.where]
+        return "select from %s, result = %s, where = %s" % (table, result, where)
 
     def do(self):
         if self.tree is not None:

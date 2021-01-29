@@ -1,4 +1,5 @@
 
+stmt_list -> stmt (stmt)*
 
 stmt -> create_stmt | describe_stmt | insert_stmt | select_stmt
 
@@ -10,7 +11,7 @@ insert_stmt -> INSERT INTO ID SET ID EQUALS value (COMMA ID EQUALS value)* SEMIC
 
 select_stmt -> SELECT select_expr SEMICOLON
 
-select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS variable)* )*
+select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS value)* )*
 
 value -> INT | STRING
 
@@ -19,4 +20,15 @@ expr -> term ((PLUS | MINUS) term)*
 term -> factor ((MUL | DIV) factor)*
 
 factor -> INT | LPAREN expr RPAREN
+
+
+TODO
+
+- Expressions in insert: insert into foobar set foo = ( 1 + 1 ) * 2
+- Multi expressions in select: select 1 + 1, 2 + 2
+- Mix expressions and ids in select: select 1 + 1, foo from foobar
+
+- Boolean logic in select: select foo from foobar where foo > 1
+- Boolean expressions in select: select foo from foobar where foo > 1 or bar = 2
+
 

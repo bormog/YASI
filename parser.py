@@ -131,14 +131,14 @@ class Parser:
         table = ast.Table(self.token)
         self.move_forward(TokenType.ID)
 
-        columns = []
+        assignments = []
 
         self.move_forward(TokenType.SET)
         column = ast.Column(self.token)
         self.move_forward(TokenType.ID)
         self.move_forward(TokenType.EQUALS)
         value = self.value()
-        columns.append(ast.Assign(left=column, right=value))
+        assignments.append(ast.Assign(left=column, right=value))
 
         while self.token.type == TokenType.COMMA:
             self.move_forward(TokenType.COMMA)
@@ -146,11 +146,11 @@ class Parser:
             self.move_forward(TokenType.ID)
             self.move_forward(TokenType.EQUALS)
             value = self.value()
-            columns.append(ast.Assign(left=column, right=value))
+            assignments.append(ast.Assign(left=column, right=value))
 
         self.move_forward(TokenType.SEMICOLON)
 
-        return ast.InsertStatement(table=table, columns=columns)
+        return ast.InsertStatement(table=table, assignments=assignments)
 
     def value(self) -> ast.Node:
         """

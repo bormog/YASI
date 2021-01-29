@@ -68,9 +68,9 @@ class CreateStatement(Node):
 
 class InsertStatement(Node):
 
-    def __init__(self, table, columns):
+    def __init__(self, table, assignments):
         self.table = table
-        self.columns = columns
+        self.assignments = assignments
 
 
 class SelectStatement(Node):
