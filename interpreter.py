@@ -38,6 +38,15 @@ class Interpreter(NodeVisitor):
     def visit_number(self, node):
         return int(node.value)
 
+    def visit_string(self, node):
+        return str(node.value)
+
+    def visit_table(self, node):
+        return node.name
+
+    def visit_column(self, node):
+        return node.name
+
     def visit_binary_operation(self, node):
         if node.operation == TokenType.PLUS:
             return self.visit(node.left) + self.visit(node.right)
@@ -50,14 +59,26 @@ class Interpreter(NodeVisitor):
         else:
             raise Exception('Unknown operation %s' % node.operation)
 
+    def visit_assign(self, node):
+        var = self.visit(node.left)
+        value = self.visit(node.right)
+        return var, value
+
     def visit_create_statement(self, node):
-        return "create table = %s, key = %s, columns = %s" % (node.table, node.primary_key, node.columns)
+        table = self.visit(node.table)
+        primary_key = self.visit(node.primary_key)
+        columns = [self.visit(column) for column in node.columns]
+        return "create table = %s, key = %s, columns = %s" % (
+            table, primary_key, columns)
 
     def visit_describe_statement(self, node):
-        return "describe table = %s" % node.table
+        table = self.visit(node.table)
+        return "describe table = %s" % table
 
     def visit_insert_statement(self, node):
-        return "insert into table %s, columns = %s" % (node.table, node.columns)
+        table = self.visit(node.table)
+        columns = [self.visit(asignee) for asignee in node.columns]
+        return "insert into table %s, columns = %s" % (table, columns)
 
     def visit_select_statement(self, node):
         return "select from %s, result = %s, where = %s" % (node.table, node.result, node.where)
