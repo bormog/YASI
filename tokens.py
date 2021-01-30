@@ -16,6 +16,7 @@ class TokenType(Enum):
     SELECT = r'select'
     FROM = r'from'
     WHERE = r'where'
+    LIMIT = r'limit'
 
     ID = r'[a-zA-Z_]+\d*'
     INT = r'\d+'

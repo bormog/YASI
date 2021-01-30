@@ -75,7 +75,8 @@ class InsertStatement(Node):
 
 class SelectStatement(Node):
 
-    def __init__(self, table, result, where):
+    def __init__(self, table, result, where, limit=0):
         self.table = table
         self.result = result
         self.where = where
+        self.limit = limit

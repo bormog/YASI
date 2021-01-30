@@ -88,7 +88,8 @@ class Interpreter(NodeVisitor):
             table = self.visit(node.table)
             result = [self.visit(column) for column in node.result]
             where = [self.visit(asignee) for asignee in node.where]
-            return self.storage.select(table, result, where)
+            limit = self.visit(node.limit)
+            return self.storage.select(table, result, where, limit)
 
     def do(self):
         if self.tree is not None:

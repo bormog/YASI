@@ -181,7 +181,7 @@ class Parser:
 
     def select_expr(self) -> nodes.Node:
         """
-        select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS variable)* )*
+        select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS variable)* (LIMIT INT)* )*
         Example: select 1+1
         Example: select foo from foobar
         Example: select foo, bar from foobar where foo='foo', bar=100500
@@ -219,7 +219,14 @@ class Parser:
                     self.move_forward(TokenType.EQUALS)
                     value = self.value()
                     where.append(nodes.Assign(left=column, right=value))
-            node = nodes.SelectStatement(table=table, result=result, where=where)
+
+            limit = 0
+            if self.token.type == TokenType.LIMIT:
+                self.move_forward(TokenType.LIMIT)
+                limit = nodes.Number(self.token)
+                self.move_forward(TokenType.INT)
+
+            node = nodes.SelectStatement(table=table, result=result, where=where, limit=limit)
         else:
             node = nodes.SelectStatement(table=None, result=self.expr(), where=None)
         return node

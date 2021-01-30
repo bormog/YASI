@@ -11,7 +11,7 @@ insert_stmt -> INSERT INTO ID SET ID EQUALS value (COMMA ID EQUALS value)* SEMIC
 
 select_stmt -> SELECT select_expr SEMICOLON
 
-select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS value)* )*
+select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS value)* (LIMIT INT)* )*
 
 value -> INT | STRING
 
