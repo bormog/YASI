@@ -55,7 +55,9 @@ class Table:
                 conditions = conditions & filter
 
         if conditions is not None:
-            search = search[conditions][result]
+            search = search[conditions]
+
+        search = search[result]
 
         if limit:
             search = search[:limit]
