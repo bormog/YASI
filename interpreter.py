@@ -41,7 +41,7 @@ class Interpreter(NodeVisitor):
         return int(node.value)
 
     def visit_string(self, node: nodes.String) -> str:
-        return str(node.value)
+        return str(node.value.strip("'"))
 
     def visit_table(self, node: nodes.Table) -> str:
         return node.name

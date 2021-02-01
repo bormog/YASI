@@ -106,6 +106,8 @@ class Storage:
 
         if table.primary_key not in row.keys():
             raise StorageException("Primary key %s is required" % table.primary_key)
+        if not row[table.primary_key][0]:
+            raise StorageException("Primary key cant by empty")
         if row[table.primary_key][0] in table.df.index.values:
             raise StorageException("Such primary key %s already exists" % row[table.primary_key][0])
 
