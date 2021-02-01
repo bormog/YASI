@@ -1,5 +1,6 @@
 import os
-
+import io
+from typing import Union
 import pandas as pd
 
 
@@ -21,7 +22,7 @@ class Table:
             self.df = None
 
     @staticmethod
-    def load(filepath: str):
+    def load(filepath: Union[str, io.StringIO]) -> 'Table':
         table = Table()
         table.df = pd.read_csv(filepath, index_col=0)
         table.primary_key = table.df.index.name
@@ -31,7 +32,7 @@ class Table:
     def column_exists(self, name: str) -> bool:
         return name == self.primary_key or name in self.columns
 
-    def save(self, filepath: str) -> None:
+    def save(self, filepath: Union[str, io.StringIO]) -> None:
         self.df.to_csv(filepath, index_label=self.df.index.name)
 
     def info(self) -> list:
