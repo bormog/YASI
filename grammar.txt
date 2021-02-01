@@ -23,7 +23,6 @@ factor -> INT | LPAREN expr RPAREN
 
 
 TODO
- - select with index
  - tests on table + storage
  - gui
 

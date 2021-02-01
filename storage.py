@@ -44,18 +44,26 @@ class Table:
 
     def select(self, result: list, where: list, limit: int = 0):
         search = self.df
-        search = search.reset_index()
 
-        conditions = None
-        for column, value in where:
-            filter = (search[column] == value)
-            if conditions is None:
-                conditions = filter
+        pk = None
+        conditions = []
+        for name, value in where:
+            if name == self.primary_key:
+                pk = value
             else:
-                conditions = conditions & filter
+                conditions.append((name, value,))
 
-        if conditions is not None:
-            search = search[conditions]
+        if pk is not None:
+            try:
+                search = search.loc[[pk], :]
+            except KeyError:
+                return None
+
+        for name, value in conditions:
+            search = search[search[name] == value]
+
+        if self.primary_key in result:
+            search = search.reset_index()
 
         search = search[result]
 
