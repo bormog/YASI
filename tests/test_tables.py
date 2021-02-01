@@ -1,10 +1,9 @@
-import io
 import csv
+import io
 import unittest
 
-from tests.helpers import cases
-
 from storage import Table
+from tests.helpers import cases
 
 
 class BuffTable:

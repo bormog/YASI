@@ -1,8 +1,8 @@
 import unittest
-from tokens import TokenType, Token
-from lexer import Lexer, LexerException
 
+from lexer import Lexer, LexerException
 from tests.helpers import cases
+from tokens import TokenType
 
 
 class TestLexer(unittest.TestCase):

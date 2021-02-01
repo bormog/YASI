@@ -10,7 +10,9 @@ def cases(test_cases):
                 try:
                     func(*new_args)
                 except Exception as e:
-                    e.args = e.args + ('Test case: %s has been failed' % str(case), )
+                    e.args = e.args + ('Test case: %s has been failed' % str(case),)
                     raise
+
         return wrapper
+
     return decorator
