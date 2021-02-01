@@ -42,7 +42,7 @@ class Table:
         row = row.set_index(self.df.index.name)
         self.df = pd.concat([self.df, row])
 
-    def select(self, result: list, where: list, limit: int = 0):
+    def select(self, result: list, where: list, limit: int = 0) -> list:
         search = self.df
 
         pk = None
@@ -57,7 +57,7 @@ class Table:
             try:
                 search = search.loc[[pk], :]
             except KeyError:
-                return None
+                return []
 
         for name, value in conditions:
             search = search[search[name] == value]
