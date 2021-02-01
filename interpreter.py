@@ -27,9 +27,9 @@ class NodeVisitor:
 
 class Interpreter(NodeVisitor):
 
-    def __init__(self, tree: nodes.Node) -> None:
+    def __init__(self, tree: nodes.Node, working_dir: str) -> None:
         self.tree = tree
-        self.storage = Storage()
+        self.storage = Storage(working_dir)
 
     def visit_statements(self, node: nodes.Statements) -> list:
         results = []

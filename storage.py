@@ -76,7 +76,7 @@ class Table:
 
 class Storage:
 
-    def __init__(self, working_dir: str = "tables"):
+    def __init__(self, working_dir: str):
         if not os.path.exists(working_dir):
             raise StorageException("%s working dir is not exists")
         self._working_dir = working_dir
