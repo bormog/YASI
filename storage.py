@@ -35,7 +35,7 @@ class Table:
         self.df.to_csv(filepath, index_label=self.df.index.name)
 
     def info(self) -> list:
-        return self.columns
+        return [self.primary_key] + self.columns
 
     def insert(self, data: dict) -> None:
         row = pd.DataFrame(data, columns=[self.primary_key] + self.columns)
@@ -85,7 +85,7 @@ class Storage:
         return self._exists(name)
 
     def describe(self, name: str) -> list:
-        return Table.load(self._path(name)).columns
+        return Table.load(self._path(name)).info()
 
     def insert(self, name: str, columns: list) -> None:
         table = Table.load(self._path(name))

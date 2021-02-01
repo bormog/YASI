@@ -23,6 +23,9 @@ factor -> INT | LPAREN expr RPAREN
 
 
 TODO
+ - select with index
+ - tests on table + storage
+ - gui
 
 - Expressions in insert: insert into foobar set foo = ( 1 + 1 ) * 2
 - Multi expressions in select: select 1 + 1, 2 + 2
