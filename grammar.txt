@@ -25,7 +25,9 @@ factor -> INT | LPAREN expr RPAREN
 TODO
  - tests on table + storage
  - gui
+ - semantic analysis ? (check order by col present in results)
 
+- order by in select
 - Expressions in insert: insert into foobar set foo = ( 1 + 1 ) * 2
 - Multi expressions in select: select 1 + 1, 2 + 2
 - Mix expressions and ids in select: select 1 + 1, foo from foobar

@@ -21,14 +21,9 @@ class BuffTable:
 
 class TestTable(unittest.TestCase):
 
-    def setUp(self) -> None:
-        self.buff = io.StringIO
-
-    def tearDown(self) -> None:
-        self.buff = None
-
     def test_table_init(self):
         table = Table(primary_key="uid", columns=["col1", "col2", "col3"])
+
         self.assertEqual("uid", table.primary_key)
         self.assertEqual(["col1", "col2", "col3"], table.columns)
         self.assertEqual("uid", table.df.index.name)
@@ -41,6 +36,7 @@ class TestTable(unittest.TestCase):
 
         reader = csv.reader(buff, delimiter=',')
         header = next(reader)
+
         self.assertEqual(["uid", "col1", "col2", "col3"], header)
 
     def test_table_load(self):
@@ -52,6 +48,7 @@ class TestTable(unittest.TestCase):
         buff_table.save()
 
         table = Table.load(buff_table.buff)
+
         self.assertEqual("uid", table.primary_key)
         self.assertEqual(["col1", "col2", "col3"], table.columns)
         self.assertEqual([['col11', 'col12', 'col13']], table.df.values.tolist())
@@ -70,6 +67,7 @@ class TestTable(unittest.TestCase):
     def test_table_insert(self):
         table = Table(primary_key="uid", columns=["col1", "col2", "col3"])
         table.insert(dict(uid=[1], col1=["col11"], col2=["col12"], col3=["col13"]))
+
         self.assertEqual([1], table.df.index.values)
         self.assertEqual([['col11', 'col12', 'col13']], table.df.values.tolist())
 
