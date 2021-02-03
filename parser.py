@@ -119,9 +119,21 @@ class Parser:
         self.move_forward(TokenType.SEMICOLON)
         return nodes.DescribeStatement(table=table)
 
+    def assignee_sub_stmt(self) -> nodes.Node:
+        """
+        assignee_sub_stmt -> ID EQUALS value
+        Example: foo=5
+        Example: foo='bar'
+        """
+        column = nodes.Column(self.token)
+        self.move_forward(TokenType.ID)
+        self.move_forward(TokenType.EQUALS)
+        value = self.value()
+        return nodes.Assign(left=column, right=value)
+
     def insert_stmt(self) -> nodes.Node:
         """
-        insert_stmt -> INSERT INTO ID SET ID EQUALS value (COMMA ID EQUALS value)* SEMICOLON
+        insert_stmt -> INSERT INTO ID SET assignee_sub_stmt (assignee_sub_stmt)* SEMICOLON
         Example: insert into foobar set foo=4, bar='bar', buz=100500;
         """
 
@@ -134,19 +146,12 @@ class Parser:
         assignments = []
 
         self.move_forward(TokenType.SET)
-        column = nodes.Column(self.token)
-        self.move_forward(TokenType.ID)
-        self.move_forward(TokenType.EQUALS)
-        value = self.value()
-        assignments.append(nodes.Assign(left=column, right=value))
+
+        assignments.append(self.assignee_sub_stmt())
 
         while self.token.type == TokenType.COMMA:
             self.move_forward(TokenType.COMMA)
-            column = nodes.Column(self.token)
-            self.move_forward(TokenType.ID)
-            self.move_forward(TokenType.EQUALS)
-            value = self.value()
-            assignments.append(nodes.Assign(left=column, right=value))
+            assignments.append(self.assignee_sub_stmt())
 
         self.move_forward(TokenType.SEMICOLON)
 
@@ -181,7 +186,7 @@ class Parser:
 
     def select_expr(self) -> nodes.Node:
         """
-        select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS variable)* (ORDER BY ID (ASC|DESC))? (LIMIT INT)? )*
+        select_expr -> expr | ID (COMMA ID)* FROM ID (WHERE assignee_sub_stmt (COMMA assignee_sub_stmt)*)? (order_sub_stmt)? (limit_sub_stmt)?*
         Example: select 1+1
         Example: select foo from foobar
         Example: select foo, bar from foobar where foo='foo', bar=100500
@@ -206,40 +211,21 @@ class Parser:
             where = []
             if self.token.type == TokenType.WHERE:
                 self.move_forward(TokenType.WHERE)
-                column = nodes.Column(self.token)
-                self.move_forward(TokenType.ID)
-                self.move_forward(TokenType.EQUALS)
-                value = self.value()
-                where.append(nodes.Assign(left=column, right=value))
+                where.append(self.assignee_sub_stmt())
 
                 while self.token.type == TokenType.COMMA:
                     self.move_forward(TokenType.COMMA)
-                    column = nodes.Column(self.token)
-                    self.move_forward(TokenType.ID)
-                    self.move_forward(TokenType.EQUALS)
-                    value = self.value()
-                    where.append(nodes.Assign(left=column, right=value))
+                    where.append(self.assignee_sub_stmt())
 
-            order = nodes.Empty()
             if self.token.type == TokenType.ORDER:
-                self.move_forward(TokenType.ORDER)
-                self.move_forward(TokenType.BY)
-                column = nodes.Column(self.token)
-                self.move_forward(TokenType.ID)
-                asc_desc = self.token.type
-                if self.token.type == TokenType.ASC:
-                    self.move_forward(TokenType.ASC)
-                elif self.token.type == TokenType.DESC:
-                    self.move_forward(TokenType.DESC)
-                else:
-                    raise ParserUnexpectedToken(self.token, "%s | %s" % (TokenType.ASC, TokenType.DESC))
-                order = nodes.Order(column, asc_desc)
+                order = self.order_sub_stmt()
+            else:
+                order = nodes.Empty()
 
-            limit = nodes.Empty()
             if self.token.type == TokenType.LIMIT:
-                self.move_forward(TokenType.LIMIT)
-                limit = nodes.Number(self.token)
-                self.move_forward(TokenType.INT)
+                limit = self.limit_sub_stmt()
+            else:
+                limit = nodes.Empty()
 
             node = nodes.SelectStatement(
                 table=table,
@@ -257,6 +243,38 @@ class Parser:
                 limit=nodes.Empty()
             )
         return node
+
+    def order_sub_stmt(self) -> nodes.Node:
+        """
+        order_sub_stmt -> ORDER BY ID (ASC | DESC)
+        Example: order by foo asc
+        """
+
+        self.move_forward(TokenType.ORDER)
+        self.move_forward(TokenType.BY)
+
+        by = nodes.Column(self.token)
+        self.move_forward(TokenType.ID)
+
+        asc_desc = self.token.type
+        if self.token.type == TokenType.ASC:
+            self.move_forward(TokenType.ASC)
+        elif self.token.type == TokenType.DESC:
+            self.move_forward(TokenType.DESC)
+        else:
+            raise ParserUnexpectedToken(self.token, "%s | %s" % (TokenType.ASC, TokenType.DESC))
+        return nodes.Order(by, asc_desc)
+
+    def limit_sub_stmt(self) -> nodes.Node:
+        """
+        limit_sub_stmt -> LIMIT NUMBER
+        Example: limit 10
+        """
+
+        self.move_forward(TokenType.LIMIT)
+        limit = nodes.Number(self.token)
+        self.move_forward(TokenType.INT)
+        return limit
 
     def stmt(self) -> nodes.Node:
         """
