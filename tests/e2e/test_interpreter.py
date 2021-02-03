@@ -1,15 +1,13 @@
 import os
 import unittest
 
-from tests.helpers import cases
-
+from interpreter import Interpreter
 from lexer import Lexer
 from parser import Parser
-from interpreter import Interpreter
+from tests.helpers import cases
 
 
 class TestInterpreter(unittest.TestCase):
-
     TEST_DIR = 'tests_tables'
 
     def setUp(self) -> None:
@@ -23,14 +21,14 @@ class TestInterpreter(unittest.TestCase):
 
     @cases([
         (
-            [
-                "create table foobar (primary key foo);",
-                "describe foobar;"
-            ],
-            [
-                True,
-                ["foo"]
-            ]
+                [
+                    "create table foobar (primary key foo);",
+                    "describe foobar;"
+                ],
+                [
+                    True,
+                    ["foo"]
+                ]
         ),
         (
                 [
@@ -72,20 +70,20 @@ class TestInterpreter(unittest.TestCase):
 
     @cases([
         (
-            [
-                "create table foobar (primary key uid, a, b);",
-                "insert into foobar set uid=1, a='Hello', b=100;",
-                "select uid, a, b from foobar;"
-                "insert into foobar set uid=2, a='World', b=200;",
-                "select uid, a, b from foobar;"
-            ],
-            [
-                True,
-                None,
-                [[1, "Hello", 100]],
-                None,
-                [[1, "Hello", 100], [2, "World", 200]]
-            ]
+                [
+                    "create table foobar (primary key uid, a, b);",
+                    "insert into foobar set uid=1, a='Hello', b=100;",
+                    "select uid, a, b from foobar;"
+                    "insert into foobar set uid=2, a='World', b=200;",
+                    "select uid, a, b from foobar;"
+                ],
+                [
+                    True,
+                    None,
+                    [[1, "Hello", 100]],
+                    None,
+                    [[1, "Hello", 100], [2, "World", 200]]
+                ]
         ),
     ])
     def test_insert_ok(self, queries, expected):
@@ -96,7 +94,6 @@ class TestInterpreter(unittest.TestCase):
 
 
 class TestInterpreterSelect(unittest.TestCase):
-
     TEST_DIR = 'tests_tables'
 
     def setUp(self) -> None:

@@ -1,8 +1,8 @@
 import unittest
 
+import nodes
 from lexer import Lexer
 from parser import Parser
-import nodes
 from tests.helpers import cases
 
 
@@ -182,6 +182,3 @@ class TestSelect(unittest.TestCase):
 
         self.assertTrue(isinstance(node.order, (nodes.Empty, nodes.Order)))
         self.assertTrue(isinstance(node.limit, (nodes.Empty, nodes.Number)))
-
-
-

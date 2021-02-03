@@ -2,7 +2,6 @@ import os
 import unittest
 
 from storage import Storage, StorageException, TableNotExists, TableColumnNotExists
-from tests.helpers import cases
 
 
 class TestStorage(unittest.TestCase):
@@ -38,12 +37,12 @@ class TestStorage(unittest.TestCase):
 
     def test_insert_raise_exception_on_invalid_table(self):
         with self.assertRaises(TableNotExists):
-            self.storage.insert("foobar", [("a", 1, )])
+            self.storage.insert("foobar", [("a", 1,)])
 
     def test_insert_raise_exception_on_invalid_columns(self):
         self.storage.create("foobar", "uid", ["foo", "bar"])
         with self.assertRaises(TableColumnNotExists):
-            self.storage.insert("foobar", [("a", 1, )])
+            self.storage.insert("foobar", [("a", 1,)])
 
     def test_insert_raise_exception_without_pk(self):
         self.storage.create("foobar", "uid", ["foo", "bar"])
@@ -79,7 +78,3 @@ class TestStorage(unittest.TestCase):
         self.storage.create("foobar", "uid", ["foo", "bar"])
         with self.assertRaises(TableColumnNotExists):
             self.storage.select("foobar", ["uid"], [], ("a", True))
-
-
-
-
