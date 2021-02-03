@@ -23,6 +23,9 @@ factor -> INT | LPAREN expr RPAREN
 
 
 TODO
+ - split create on column_list == primary_key, (column_list)?
+ - split insert on assignments == into table set assignments
+ - split select on column_list, assignments, order?, limit? == (column_list)+ from .. where assignments order limit
  - gui
  - semantic analysis ? (check order by col present in results)
 
