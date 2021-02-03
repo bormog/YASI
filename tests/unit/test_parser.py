@@ -6,6 +6,85 @@ import nodes
 from tests.helpers import cases
 
 
+class TestParser(unittest.TestCase):
+
+    @cases([
+        ("42", nodes.Number),
+        ("(42)", nodes.Number),
+        ("2+2", nodes.BinaryOperation),
+        ("2+3+4", nodes.BinaryOperation),
+        ("2*3", nodes.BinaryOperation),
+        ("2*3*4", nodes.BinaryOperation),
+    ])
+    def test_expr(self, text, expected):
+        parser = Parser(lex=Lexer(text))
+        node = parser.expr()
+        self.assertIsInstance(node, expected)
+
+    @cases([
+        ("42", nodes.Number),
+        ("(42)", nodes.Number),
+        ("2*3", nodes.BinaryOperation),
+        ("2*3*4", nodes.BinaryOperation),
+    ])
+    def test_term(self, text, expected):
+        parser = Parser(lex=Lexer(text))
+        node = parser.term()
+        self.assertIsInstance(node, expected)
+
+    @cases([
+        "100500",
+        "(100500)"
+    ])
+    def test_factor_int(self, text):
+        parser = Parser(lex=Lexer(text))
+        node = parser.factor()
+        self.assertIsInstance(node, nodes.Number)
+
+    @cases([
+        "0",
+        "42",
+    ])
+    def test_value_num(self, text):
+        parser = Parser(lex=Lexer(text))
+        node = parser.value()
+        self.assertIsInstance(node, nodes.Number)
+
+    @cases([
+        "'foo'",
+        "'foo_bar"
+        "'",
+    ])
+    def test_value_str(self, text):
+        parser = Parser(lex=Lexer(text))
+        node = parser.value()
+        self.assertIsInstance(node, nodes.String)
+
+    @cases([
+        "order by foo asc",
+        "order by foo desc"
+    ])
+    def test_order(self, text):
+        parser = Parser(lex=Lexer(text))
+        node = parser.order_sub_stmt()
+        self.assertIsInstance(node, nodes.Order)
+
+    def test_limit(self):
+        parser = Parser(lex=Lexer("limit 10"))
+        node = parser.limit_sub_stmt()
+        self.assertIsInstance(node, nodes.Number)
+
+    @cases([
+        "foo=42",
+        "foo='bar'"
+    ])
+    def test_assignee(self, text):
+        parser = Parser(lex=Lexer(text))
+        node = parser.assignee_sub_stmt()
+        self.assertIsInstance(node, nodes.Assign)
+        self.assertIsInstance(node.left, nodes.Column)
+
+
 class TestCreate(unittest.TestCase):
 
     @cases([
