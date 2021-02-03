@@ -2,6 +2,10 @@ class Node:
     pass
 
 
+class NulNode(Node):
+    pass
+
+
 class Number(Node):
 
     def __init__(self, token):

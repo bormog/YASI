@@ -220,7 +220,7 @@ class Parser:
                     value = self.value()
                     where.append(nodes.Assign(left=column, right=value))
 
-            limit = 0
+            limit = nodes.NulNode()
             if self.token.type == TokenType.LIMIT:
                 self.move_forward(TokenType.LIMIT)
                 limit = nodes.Number(self.token)

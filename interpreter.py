@@ -31,6 +31,9 @@ class Interpreter(NodeVisitor):
         self.tree = tree
         self.storage = Storage(working_dir)
 
+    def visit_nul_node(self, node: nodes.NulNode) -> None:
+        return None
+
     def visit_statements(self, node: nodes.Statements) -> list:
         results = []
         for child in node.children:
@@ -82,7 +85,7 @@ class Interpreter(NodeVisitor):
         return self.storage.insert(table, assignments)
 
     def visit_select_statement(self, node: nodes.SelectStatement) -> list:
-        if isinstance(node.result, nodes.BinaryOperation):
+        if isinstance(node.result, nodes.BinaryOperation) or isinstance(node.result, nodes.Number):
             return self.visit(node.result)
         else:
             table = self.visit(node.table)
