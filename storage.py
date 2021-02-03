@@ -9,6 +9,20 @@ class StorageException(Exception):
     pass
 
 
+class TableNotExists(StorageException):
+
+    def __init__(self, name):
+        msg = "Table %s not exists" % name
+        super().__init__(msg)
+
+
+class TableColumnNotExists(StorageException):
+
+    def __init__(self, name, column):
+        msg = "Column %s not exists in table %s" % (column, name)
+        super().__init__(msg)
+
+
 class Table:
 
     def __init__(self, primary_key=None, columns=None):
@@ -95,14 +109,18 @@ class Storage:
         return self._exists(name)
 
     def describe(self, name: str) -> list:
+        if not self._exists(name):
+            raise TableNotExists(name)
         return Table.load(self._path(name)).info()
 
     def insert(self, name: str, columns: list) -> None:
+        if not self._exists(name):
+            raise TableNotExists(name)
         table = Table.load(self._path(name))
         row = {}
         for column, value in columns:
             if not table.column_exists(column):
-                raise StorageException("Column %s not exists in table %s" % (column, name))
+                raise TableColumnNotExists(name, column)
             else:
                 row[column] = [value]
 
@@ -117,11 +135,13 @@ class Storage:
         table.save(self._path(name))
 
     def select(self, name: str, result: list, where: list, limit: int = None) -> list:
+        if not self._exists(name):
+            raise TableNotExists(name)
         table = Table.load(self._path(name))
         for column in result:
             if not table.column_exists(column):
-                raise StorageException("Column %s not exists in table %s" % (column, name))
+                raise TableColumnNotExists(name, column)
         for column, _ in where:
             if not table.column_exists(column):
-                raise StorageException("Column %s not exists in table %s" % (column, name))
+                raise TableColumnNotExists(name, column)
         return table.select(result, where, limit)
