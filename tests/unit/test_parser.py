@@ -68,6 +68,7 @@ class TestParser(unittest.TestCase):
         parser = Parser(lex=Lexer(text))
         node = parser.order_sub_stmt()
         self.assertIsInstance(node, nodes.Order)
+        self.assertIsInstance(node.column, nodes.Column)
 
     def test_limit(self):
         parser = Parser(lex=Lexer("limit 10"))
@@ -137,7 +138,9 @@ class TestSelect(unittest.TestCase):
 
     @cases([
         "select 1;",
-        "select 1+1;"
+        "select 1+1;",
+        "select 2*3;",
+        "select ((1+1)*(2+2));"
     ])
     def test_select_expression(self, sql):
         parser = Parser(lex=Lexer(sql))
