@@ -17,6 +17,10 @@ class TokenType(Enum):
     FROM = r'from'
     WHERE = r'where'
     LIMIT = r'limit'
+    ORDER = r'order'
+    BY = r'by'
+    ASC = r'asc'
+    DESC = r'desc'
 
     ID = r'[a-zA-Z_]+\d*'
     INT = r'\d+'

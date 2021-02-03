@@ -1,28 +1,31 @@
+from tokens import Token
+
+
 class Node:
     pass
 
 
-class NulNode(Node):
+class Empty(Node):
     pass
 
 
 class Number(Node):
 
-    def __init__(self, token):
+    def __init__(self, token: Token):
         self.token = token
         self.value = token.value
 
 
 class String(Node):
 
-    def __init__(self, token):
+    def __init__(self, token: Token):
         self.token = token
         self.value = token.value
 
 
 class Identifier(Node):
 
-    def __init__(self, token):
+    def __init__(self, token: Token):
         self.token = token
         self.name = token.value
 
@@ -33,6 +36,13 @@ class Table(Identifier):
 
 class Column(Identifier):
     pass
+
+
+class Order(Node):
+
+    def __init__(self, column: Column, order):
+        self.column = column
+        self.order = order
 
 
 class Assign(Node):
@@ -79,8 +89,9 @@ class InsertStatement(Node):
 
 class SelectStatement(Node):
 
-    def __init__(self, table, result, where, limit=0):
+    def __init__(self, table, result, where, order, limit=0):
         self.table = table
         self.result = result
         self.where = where
+        self.order = order
         self.limit = limit

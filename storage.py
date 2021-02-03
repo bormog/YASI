@@ -58,7 +58,7 @@ class Table:
         row = row.set_index(self.df.index.name)
         self.df = pd.concat([self.df, row])
 
-    def select(self, result: list, where: list, limit: int = 0) -> list:
+    def select(self, result: list, where: list, order: tuple = None, limit: int = 0) -> list:
         search = self.df
 
         pk = None
@@ -80,6 +80,10 @@ class Table:
 
         if self.primary_key in result:
             search = search.reset_index()
+
+        if order:
+            column, ascending = order
+            search = search.sort_values(by=column, ascending=ascending)
 
         search = search[result]
 
@@ -134,7 +138,7 @@ class Storage:
         table.insert(row)
         table.save(self._path(name))
 
-    def select(self, name: str, result: list, where: list, limit: int = None) -> list:
+    def select(self, name: str, result: list, where: list, order: tuple = None, limit: int = None) -> list:
         if not self._exists(name):
             raise TableNotExists(name)
         table = Table.load(self._path(name))
@@ -144,4 +148,4 @@ class Storage:
         for column, _ in where:
             if not table.column_exists(column):
                 raise TableColumnNotExists(name, column)
-        return table.select(result, where, limit)
+        return table.select(result, where, order, limit)

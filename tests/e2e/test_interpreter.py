@@ -125,17 +125,36 @@ class TestInterpreterSelect(unittest.TestCase):
     @cases([
         ("select uid from foobar;", [[1], [2], [3], [4], [5], [6]]),
         ("select a from foobar;", [['a'], ['b'], ['c'], ['d'], ['e'], ['f']]),
+
         ("select uid, a from foobar;", [[1, 'a'], [2, 'b'], [3, 'c'], [4, 'd'], [5, 'e'], [6, 'f']]),
         ("select a, uid from foobar;", [['a', 1], ['b', 2], ['c', 3], ['d', 4], ['e', 5], ['f', 6]]),
         ("select a, a from foobar;", [['a', 'a'], ['b', 'b'], ['c', 'c'], ['d', 'd'], ['e', 'e'], ['f', 'f']]),
+
         ("select uid from foobar limit 1;", [[1]]),
         ("select uid from foobar limit 100500;", [[1], [2], [3], [4], [5], [6]]),
+
         ("select uid from foobar where uid=1;", [[1]]),
         ("select uid from foobar where uid=1, uid=2;", [[2]]),
         ("select uid from foobar where uid=100500;", []),
         ("select uid from foobar where a='a';", [[1]]),
         ("select uid from foobar where uid=1, a='a';", [[1]]),
         ("select uid from foobar where b=100;", [[1], [2]]),
+
+        # select primary key order by primary key
+        ("select uid from foobar order by uid asc limit 3;", [[1], [2], [3]]),
+        ("select uid from foobar order by uid desc limit 3;", [[6], [5], [4]]),
+
+        # select column order by primary key
+        ("select a from foobar order by uid asc limit 3;", [['a'], ['b'], ['c']]),
+        ("select a from foobar order by uid desc limit 3;", [['f'], ['e'], ['d']]),
+
+        # select column order by column
+        ("select a from foobar order by a asc limit 1;", [['a']]),
+        ("select a from foobar order by a desc limit 1;", [['f']]),
+
+        # select primary key order by column
+        ("select uid from foobar order by a asc limit 1;", [[1]]),
+        ("select uid from foobar order by a desc limit 1;", [[6]]),
     ])
     def test_select(self, sql, expected):
         inter = Interpreter(tree=Parser(lex=Lexer(sql)).parse(), working_dir=self.TEST_DIR)

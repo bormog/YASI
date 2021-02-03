@@ -181,7 +181,7 @@ class Parser:
 
     def select_expr(self) -> nodes.Node:
         """
-        select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS variable)* (LIMIT INT)* )*
+        select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS variable)* (ORDER BY ID (ASC|DESC))? (LIMIT INT)? )*
         Example: select 1+1
         Example: select foo from foobar
         Example: select foo, bar from foobar where foo='foo', bar=100500
@@ -220,15 +220,42 @@ class Parser:
                     value = self.value()
                     where.append(nodes.Assign(left=column, right=value))
 
-            limit = nodes.NulNode()
+            order = nodes.Empty()
+            if self.token.type == TokenType.ORDER:
+                self.move_forward(TokenType.ORDER)
+                self.move_forward(TokenType.BY)
+                column = nodes.Column(self.token)
+                self.move_forward(TokenType.ID)
+                asc_desc = self.token.type
+                if self.token.type == TokenType.ASC:
+                    self.move_forward(TokenType.ASC)
+                elif self.token.type == TokenType.DESC:
+                    self.move_forward(TokenType.DESC)
+                else:
+                    raise ParserUnexpectedToken(self.token, "%s | %s" % (TokenType.ASC, TokenType.DESC))
+                order = nodes.Order(column, asc_desc)
+
+            limit = nodes.Empty()
             if self.token.type == TokenType.LIMIT:
                 self.move_forward(TokenType.LIMIT)
                 limit = nodes.Number(self.token)
                 self.move_forward(TokenType.INT)
 
-            node = nodes.SelectStatement(table=table, result=result, where=where, limit=limit)
+            node = nodes.SelectStatement(
+                table=table,
+                result=result,
+                where=where,
+                order=order,
+                limit=limit
+            )
         else:
-            node = nodes.SelectStatement(table=None, result=self.expr(), where=None)
+            node = nodes.SelectStatement(
+                table=nodes.Empty(),
+                result=self.expr(),
+                where=None,
+                order=nodes.Empty(),
+                limit=nodes.Empty()
+            )
         return node
 
     def stmt(self) -> nodes.Node:

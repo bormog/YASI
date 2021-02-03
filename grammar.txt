@@ -11,7 +11,7 @@ insert_stmt -> INSERT INTO ID SET ID EQUALS value (COMMA ID EQUALS value)* SEMIC
 
 select_stmt -> SELECT select_expr SEMICOLON
 
-select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS value)* (LIMIT INT)* )*
+select_expr -> expr | ID (COMMA ID)* FROM ID ( WHERE ID EQUALS variable (COMMA ID EQUALS value)* (ORDER BY ID (ASC|DESC))? (LIMIT INT)? )*
 
 value -> INT | STRING
 
@@ -23,11 +23,9 @@ factor -> INT | LPAREN expr RPAREN
 
 
 TODO
- - tests on table + storage
  - gui
  - semantic analysis ? (check order by col present in results)
 
-- order by in select
 - Expressions in insert: insert into foobar set foo = ( 1 + 1 ) * 2
 - Multi expressions in select: select 1 + 1, 2 + 2
 - Mix expressions and ids in select: select 1 + 1, foo from foobar

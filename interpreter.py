@@ -31,7 +31,7 @@ class Interpreter(NodeVisitor):
         self.tree = tree
         self.storage = Storage(working_dir)
 
-    def visit_nul_node(self, node: nodes.NulNode) -> None:
+    def visit_empty(self, node: nodes.Empty) -> None:
         return None
 
     def visit_statements(self, node: nodes.Statements) -> list:
@@ -51,6 +51,15 @@ class Interpreter(NodeVisitor):
 
     def visit_column(self, node: nodes.Column) -> str:
         return node.name
+
+    def visit_order(self, node: nodes.Order):
+        column = self.visit(node.column)
+        if node.order == TokenType.ASC:
+            return column, True
+        elif node.order == TokenType.DESC:
+            return column, False
+        else:
+            raise Exception('Unknown sort order %s' % node.order)
 
     def visit_binary_operation(self, node: nodes.BinaryOperation) -> int:
         if node.operation == TokenType.PLUS:
@@ -92,7 +101,8 @@ class Interpreter(NodeVisitor):
             result = [self.visit(column) for column in node.result]
             where = [self.visit(asignee) for asignee in node.where]
             limit = self.visit(node.limit)
-            return self.storage.select(table, result, where, limit)
+            order = self.visit(node.order)
+            return self.storage.select(table, result, where, order, limit)
 
     def do(self):
         if self.tree is not None:
