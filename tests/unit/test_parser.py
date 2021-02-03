@@ -6,6 +6,54 @@ import nodes
 from tests.helpers import cases
 
 
+class TestCreate(unittest.TestCase):
+
+    @cases([
+        "create table foo (primary key foo);",
+        "create table foo (primary key foo, bar);"
+    ])
+    def test_create_statement(self, sql):
+        parser = Parser(lex=Lexer(sql))
+        statements = parser.parse()
+        node = statements.children[0]
+
+        self.assertIsInstance(node, nodes.CreateStatement)
+        self.assertIsInstance(node.table, nodes.Table)
+        self.assertIsInstance(node.primary_key, nodes.Column)
+
+        for column in node.columns:
+            with self.subTest(column=column):
+                self.assertIsInstance(column, nodes.Column)
+
+
+class TestDescribe(unittest.TestCase):
+
+    def test_describe_statement(self):
+        sql = "describe foo;"
+        parser = Parser(lex=Lexer(sql))
+        statements = parser.parse()
+        node = statements.children[0]
+
+        self.assertIsInstance(node, nodes.DescribeStatement)
+        self.assertIsInstance(node.table, nodes.Table)
+
+
+class TestInsert(unittest.TestCase):
+
+    def test_describe_statement(self):
+        sql = "insert into foo set a=1, b=2, c='3';"
+        parser = Parser(lex=Lexer(sql))
+        statements = parser.parse()
+        node = statements.children[0]
+
+        self.assertIsInstance(node, nodes.InsertStatement)
+        self.assertIsInstance(node.table, nodes.Table)
+
+        for assignee in node.assignments:
+            with self.subTest(assignee=assignee):
+                self.assertIsInstance(assignee, nodes.Assign)
+
+
 class TestSelect(unittest.TestCase):
 
     @cases([
