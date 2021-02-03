@@ -89,7 +89,14 @@ class TestSelect(unittest.TestCase):
 
         self.assertIsInstance(node.table, nodes.Table)
         self.assertIsInstance(node.result, list)
+        for column in node.result:
+            with self.subTest(column=column):
+                self.assertIsInstance(column, nodes.Column)
+
         self.assertIsInstance(node.where, list)
+        for assignee in node.where:
+            with self.subTest(assignee=assignee):
+                self.assertIsInstance(assignee, nodes.Assign)
 
         self.assertTrue(isinstance(node.order, (nodes.Empty, nodes.Order)))
         self.assertTrue(isinstance(node.limit, (nodes.Empty, nodes.Number)))
