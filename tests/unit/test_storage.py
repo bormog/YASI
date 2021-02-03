@@ -75,6 +75,11 @@ class TestStorage(unittest.TestCase):
         with self.assertRaises(TableNotExists):
             self.storage.select("foobar", ["uid"], [])
 
+    def test_select_raise_exception_on_invalid_order(self):
+        self.storage.create("foobar", "uid", ["foo", "bar"])
+        with self.assertRaises(TableColumnNotExists):
+            self.storage.select("foobar", ["uid"], [], ("a", True))
+
 
 
 

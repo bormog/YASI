@@ -148,4 +148,8 @@ class Storage:
         for column, _ in where:
             if not table.column_exists(column):
                 raise TableColumnNotExists(name, column)
+        if order:
+            column, ascending = order
+            if not table.column_exists(column):
+                raise TableColumnNotExists(name, column)
         return table.select(result, where, order, limit)
