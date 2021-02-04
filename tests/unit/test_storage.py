@@ -23,10 +23,10 @@ class TestStorage(unittest.TestCase):
 
     def test_create(self):
         name = "foobar"
-        self.assertEqual(False, self.storage._exists(name))
+        self.assertEqual(False, self.storage.exists(name))
         created = self.storage.create("foobar", "uid", [])
         self.assertEqual(True, created)
-        self.assertEqual(True, self.storage._exists(name))
+        self.assertEqual(True, self.storage.exists(name))
 
         created = self.storage.create("foobar", "uid", [])
         self.assertEqual(False, created)

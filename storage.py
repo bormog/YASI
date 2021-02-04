@@ -99,28 +99,28 @@ class Storage:
             raise StorageException("%s working dir is not exists")
         self._working_dir = working_dir
 
-    def _path(self, name: str) -> str:
+    def path(self, name: str) -> str:
         filename = "%s.csv" % name
         return os.path.join(self._working_dir, filename)
 
-    def _exists(self, name: str) -> bool:
-        return os.path.exists(self._path(name))
+    def exists(self, name: str) -> bool:
+        return os.path.exists(self.path(name))
 
     def create(self, name: str, primary: str, columns: list) -> bool:
-        if self._exists(name):
+        if self.exists(name):
             return False
-        Table(primary, columns).save(self._path(name))
-        return self._exists(name)
+        Table(primary, columns).save(self.path(name))
+        return self.exists(name)
 
     def describe(self, name: str) -> list:
-        if not self._exists(name):
+        if not self.exists(name):
             raise TableNotExists(name)
-        return Table.load(self._path(name)).info()
+        return Table.load(self.path(name)).info()
 
     def insert(self, name: str, columns: list) -> None:
-        if not self._exists(name):
+        if not self.exists(name):
             raise TableNotExists(name)
-        table = Table.load(self._path(name))
+        table = Table.load(self.path(name))
         row = {}
         for column, value in columns:
             if not table.column_exists(column):
@@ -136,12 +136,12 @@ class Storage:
             raise StorageException("Such primary key %s already exists" % row[table.primary_key][0])
 
         table.insert(row)
-        table.save(self._path(name))
+        table.save(self.path(name))
 
     def select(self, name: str, result: list, where: list, order: tuple = None, limit: int = None) -> list:
-        if not self._exists(name):
+        if not self.exists(name):
             raise TableNotExists(name)
-        table = Table.load(self._path(name))
+        table = Table.load(self.path(name))
         for column in result:
             if not table.column_exists(column):
                 raise TableColumnNotExists(name, column)

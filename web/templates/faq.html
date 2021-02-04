@@ -2,28 +2,26 @@
 
 <h4 class="mt-3">Create</h4>
 <code>
-    create table users (primary key uid, first_name, last_name, salary);
+    create table languages (primary key uid, name, num_of_jobs, avg_salary);
 </code>
 
 <h4 class="mt-3">Describe</h4>
 <code>
-    describe users;
+    describe languages;
 </code>
 
 <h4 class="mt-3">Insert</h4>
 <code>
-    insert into users set uid=1, first_name='Alex', last_name='Gor', salary=1000; <br/>
-    insert into users set uid=2, first_name='Bob', last_name='Ford', salary=200; <br/>
-    insert into users set uid=3, first_name='Alex', last_name='Smith', salary=3000; <br/>
+    insert into languages set uid=11, name='Kotlin', num_of_jobs=1560, avg_salary=54000; <br/>
 </code>
 
 <h4 class="mt-3">Select</h4>
 <code>
     select 1; <br/>
     select (2+3) * (10-8) / 2; <br/>
-    select uid, first_name, last_name from users; <br/>
-    select uid, first_name from users where uid=1; <br/>
-    select uid, first_name, salary from users where first_name='Alex', salary=1000; <br/>
-    select uid, last_name, salary from users order by salary desc limit 2; <br/>
+    <br />
+    select uid, name, num_of_jobs, avg_salary from languages; <br/>
+    select uid, num_of_jobs, avg_salary from languages where name='Python'; <br/>
+    select name, avg_salary from languages order by avg_salary desc limit 3; <br/>
 </code>
 
