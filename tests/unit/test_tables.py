@@ -74,53 +74,53 @@ class TestTable(unittest.TestCase):
     @cases([
         (
                 # select uid
-                (["uid"], [], 0),
+                (["uid"], []),
                 ([[1], [2], [3]])
         ),
         (
                 # select foo
-                (["foo"], [], 0),
+                (["foo"], []),
                 ([["a"], ["b"], ["c"]])
 
         ),
         (
                 # select uid, foo
-                (["uid", "foo"], [], 0),
+                (["uid", "foo"], []),
                 ([[1, "a"], [2, "b"], [3, "c"]])
         ),
         (
                 # select foo, uid
-                (["foo", "uid"], [], 0),
+                (["foo", "uid"], []),
                 ([["a", 1], ["b", 2], ["c", 3]])
         ),
         (
                 # select uid limit 1
-                (["uid"], [], 1),
+                (["uid"], [], None, 1),
                 ([[1]])
         ),
         (
                 # select uid limit 100
-                (["uid"], [], 100),
+                (["uid"], [], None, 100),
                 ([[1], [2], [3]])
         ),
         (
                 # select uid where uid = 2
-                (["uid"], [("uid", 2)], 0),
+                (["uid"], [("uid", 2)]),
                 ([[2]])
         ),
         (
                 # select uid where uid = 100500
-                (["uid"], [("uid", 100500)], 0),
+                (["uid"], [("uid", 100500)]),
                 ([])
         ),
         (
                 # select uid where foo=c
-                (["uid"], [("foo", "c")], 0),
+                (["uid"], [("foo", "c")]),
                 ([[3]])
         ),
         (
                 # select uid where uid=3 and foo=c
-                (["uid"], [("uid", 3), ("foo", "c")], 0),
+                (["uid"], [("uid", 3), ("foo", "c")]),
                 ([[3]])
         ),
 
