@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, flash
 
 from interpreter import Interpreter
@@ -6,18 +7,11 @@ from parser import Parser, ParserException
 from storage import TableNotExists, TableColumnNotExists, StorageException
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "foobar"
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 """
 todo
- - 2 templates: base and index
- - left - textarea, right - how to + rules
- - errors -  red flash
- - results -  nice list
- 
- - secret key from env
  - create file with demo data if not exists
- - initial query in textarea
 """
 
 
