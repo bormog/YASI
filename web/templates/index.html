@@ -12,9 +12,9 @@
         <!-- Form -->
         <div class="col-md-12">
             <!-- SQL Input -->
+            <h2>Write your SQL here or copy+paste from right column</h2>
             <form method="post" action="">
                 <div class="form-group">
-                    <label for="content">Write your SQL queries here:</label>
                     <textarea name="content" rows="10"
                               id="content" placeholder="" class="form-control">{{ request.form['content'] or content }}</textarea>
                 </div>
