@@ -1,0 +1,29 @@
+<h2>How To</h2>
+
+<h4 class="mt-3">Create</h4>
+<code>
+    create table users (primary key uid); <br/>
+    create table users (primary key uid, first_name, last_name, position);
+</code>
+
+<h4 class="mt-3">Describe</h4>
+<code>
+    describe users;
+</code>
+
+<h4 class="mt-3">Insert</h4>
+<code>
+    insert into users set uid=1; <br/>
+    insert into users set uid=2, first_name='Alex', last_name='Gor', position=1;
+</code>
+
+<h4 class="mt-3">Select</h4>
+<code>
+    select 1; <br/>
+    select (2+3) * (10-8) / 2; <br/>
+    select uid from users; <br/>
+    select uid from users where uid=2; <br/>
+    select uid, first_name, position from users where first_name='Alex', position=1; <br/>
+    select uid, last_name from users order by last_name asc limit 2;
+</code>
+
