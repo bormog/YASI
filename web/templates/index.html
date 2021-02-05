@@ -29,14 +29,14 @@
         <div class="col-md-12">
             {% if error %}
                 <h2>Error</h2>
-                <div class="alert alert-danger">{{  error }} </div>
+                <div class="alert alert-danger">{{  error }}</div>
             {% endif %}
 
             {% if results %}
-            <h2>Result</h2>
-                <ul class="list-unstyled">
+                <h2>Result</h2>
+                <ul class="list-group list-group-flush">
                     {% for result in results %}
-                        <li> >> {{ result }}</li>
+                        <li class="list-group-item"> >> {{ result }}</li>
                     {% endfor %}
                 </ul>
             {% endif %}
