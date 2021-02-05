@@ -186,7 +186,7 @@ class Parser:
 
     def select_expr(self) -> nodes.Node:
         """
-        select_expr -> expr | ID (COMMA ID)* FROM ID (WHERE assignee_sub_stmt (COMMA assignee_sub_stmt)*)? (order_sub_stmt)? (limit_sub_stmt)?*
+        select_expr -> expr | ID (COMMA ID)* FROM ID (WHERE assignee_sub_stmt (AND assignee_sub_stmt)*)? (order_sub_stmt)? (limit_sub_stmt)?*
         Example: select 1+1
         Example: select foo from foobar
         Example: select foo, bar from foobar where foo='foo', bar=100500
@@ -213,8 +213,8 @@ class Parser:
                 self.move_forward(TokenType.WHERE)
                 where.append(self.assignee_sub_stmt())
 
-                while self.token.type == TokenType.COMMA:
-                    self.move_forward(TokenType.COMMA)
+                while self.token.type == TokenType.AND:
+                    self.move_forward(TokenType.AND)
                     where.append(self.assignee_sub_stmt())
 
             if self.token.type == TokenType.ORDER:

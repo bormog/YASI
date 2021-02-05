@@ -46,6 +46,7 @@ class TestLexer(unittest.TestCase):
         (')', TokenType.RPAREN),
         (',', TokenType.COMMA),
         (';', TokenType.SEMICOLON),
+        ('and', TokenType.AND),
         ('=', TokenType.EQUALS),
         ('+', TokenType.PLUS),
         ('-', TokenType.MINUS),

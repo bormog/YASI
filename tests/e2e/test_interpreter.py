@@ -131,10 +131,10 @@ class TestInterpreterSelect(unittest.TestCase):
         ("select uid from foobar limit 100500;", [[1], [2], [3], [4], [5], [6]]),
 
         ("select uid from foobar where uid=1;", [[1]]),
-        ("select uid from foobar where uid=1, uid=2;", [[2]]),
+        ("select uid from foobar where uid=1 and uid=2;", [[2]]),
         ("select uid from foobar where uid=100500;", []),
         ("select uid from foobar where a='a';", [[1]]),
-        ("select uid from foobar where uid=1, a='a';", [[1]]),
+        ("select uid from foobar where uid=1 and a='a';", [[1]]),
         ("select uid from foobar where b=100;", [[1], [2]]),
 
         # select primary key order by primary key

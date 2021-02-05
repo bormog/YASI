@@ -158,6 +158,8 @@ class TestSelect(unittest.TestCase):
     @cases([
         "select a, b from foo;",
         "select a, b from foo where a=1;",
+        "select a, b from foo where a=1 and b=2;",
+        "select a, b from foo where a=1 and b=2 and c=3;",
         "select a, b from foo where a=1 order by a asc;",
         "select a, b from foo where a=1 order by a desc;"
         "select a, b from foo where a=1 order by a asc limit 1;"

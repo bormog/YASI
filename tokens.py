@@ -22,6 +22,8 @@ class TokenType(Enum):
     ASC = r'asc'
     DESC = r'desc'
 
+    AND = r'and'
+
     ID = r'[a-zA-Z_]+\d*'
     INT = r'\d+'
     STRING = r"'[^']*'"
