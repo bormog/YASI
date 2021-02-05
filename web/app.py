@@ -32,7 +32,7 @@ def index():
             flash("Please provide SQL query")
         else:
             try:
-                inter = Interpreter(tree=Parser(lex=Lexer(content)).parse(), working_dir="tables")
+                inter = Interpreter(tree=Parser(lex=Lexer(content)).parse(), working_dir=os.getenv("WORKING_DIR"))
                 results = inter.do()
             except LexerException as err:
                 error = "Lexer Error: %s" % str(err)
