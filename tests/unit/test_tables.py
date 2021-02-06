@@ -75,54 +75,70 @@ class TestTable(unittest.TestCase):
         (
                 # select uid
                 (["uid"], []),
-                ([[1], [2], [3]])
+                [[1], [2], [3]]
         ),
         (
                 # select foo
                 (["foo"], []),
-                ([["a"], ["b"], ["c"]])
+                [["a"], ["b"], ["c"]]
 
         ),
         (
                 # select uid, foo
                 (["uid", "foo"], []),
-                ([[1, "a"], [2, "b"], [3, "c"]])
+                [[1, "a"], [2, "b"], [3, "c"]]
         ),
         (
                 # select foo, uid
                 (["foo", "uid"], []),
-                ([["a", 1], ["b", 2], ["c", 3]])
+                [["a", 1], ["b", 2], ["c", 3]]
         ),
         (
                 # select uid limit 1
                 (["uid"], [], None, 1),
-                ([[1]])
+                [[1]]
         ),
         (
                 # select uid limit 100
                 (["uid"], [], None, 100),
-                ([[1], [2], [3]])
+                [[1], [2], [3]]
         ),
         (
                 # select uid where uid = 2
                 (["uid"], [("uid", 2)]),
-                ([[2]])
+                [[2]]
         ),
         (
                 # select uid where uid = 100500
                 (["uid"], [("uid", 100500)]),
-                ([])
+                []
         ),
         (
                 # select uid where foo=c
                 (["uid"], [("foo", "c")]),
-                ([[3]])
+                [[3]]
         ),
         (
                 # select uid where uid=3 and foo=c
                 (["uid"], [("uid", 3), ("foo", "c")]),
-                ([[3]])
+                [[3]]
         ),
+        (       # select uid order by uid asc
+                (["uid"], [], ("uid", True)),
+                [[1], [2], [3]]
+        ),
+        (       # select uid order by uid desc
+                (["uid"], [], ("uid", False)),
+                [[3], [2], [1]]
+        ),
+        (       # select uid order by uid asc limit 1
+                (["uid"], [], ("uid", True), 1),
+                [[1]]
+        ),
+        (       # select uid order by uid desc limit 1
+                (["uid"], [], ("uid", False), 1),
+                [[3]]
+        )
 
     ])
     def test_table_select(self, query, expected):
