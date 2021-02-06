@@ -1,11 +1,11 @@
 import os
+
 from flask import Flask, render_template, request, flash
 
 from interpreter import Interpreter
 from lexer import Lexer, LexerException
 from parser import Parser, ParserException
 from storage import TableNotExists, TableColumnNotExists, StorageException
-
 from web.demo import initialize
 
 app = Flask(__name__)
@@ -20,7 +20,7 @@ def startapp():
 app.before_first_request(startapp)
 
 
-@app.route("/",  methods=("GET", "POST"))
+@app.route("/", methods=("GET", "POST"))
 def index():
     content = ""
     results = []

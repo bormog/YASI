@@ -3,10 +3,12 @@
 YASI - интерпретатор для подмножества SQL
 
 ## Цели проекта
+
 - Получить знания о том как работают интерпретаторы
 - Реализовать frontend-часть интерпретатора для ограниченного количества команд SQL
 
 ## Фичи
+
 - Грамматика для SQL
 - Lexer - разбивает текст на токены
 - Parser - преобразует список токенов в дерево
@@ -16,6 +18,7 @@ YASI - интерпретатор для подмножества SQL
 - Math expressions - поддержка математических выражений
 
 ## Грамматика
+
 ```
 stmt_list -> stmt (stmt)*
 stmt -> create_stmt
@@ -40,6 +43,7 @@ factor -> INT
 ```
 
 ## Пример использования
+
 ```
 from interpreter import Interpreter
 from lexer import Lexer
@@ -52,6 +56,7 @@ result = interpreter.do()
 ```
 
 ## Пример SQL комманд
+
 ```
 create table languages (primary key uid, name, num_of_jobs, avg_salary);
 describe languages;
@@ -64,10 +69,11 @@ select name, avg_salary from languages order by avg_salary desc limit 3;
 ```
 
 ## Демо
+
 https://yasqli.herokuapp.com/
 
-
 ## Тесты
+
 ``` bash
 python -m unittest discover -v
 ```
