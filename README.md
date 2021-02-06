@@ -67,8 +67,7 @@ select name, avg_salary from languages order by avg_salary desc limit 3;
 https://yasqli.herokuapp.com/
 
 
-
-
+## Тесты
 ``` bash
 python -m unittest discover -v
 ```
