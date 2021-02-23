@@ -1,7 +1,6 @@
 - [Yet Another SQL Interpreter](#yet-another-sql-interpreter)
   * [Цели проекта](#цели-проекта)
   * [Фичи](#фичи)
-  * [Грамматика](#грамматика)
   * [Как это работает](#как-это-работает)
     + [Основные понятия](#основные-понятия)
       - [Frontend](#frontend)
@@ -9,6 +8,7 @@
     + [Архитектура и основные сущности](#архитектура-и-основные-сущности)
       - [Лексический анализ](#лексический-анализ)
       - [Синтаксический анализ](#синтаксический-анализ)
+        - [Грамматика](#грамматика)
       - [Интерпретация логики](#интерпретация-логики)
   * [Пример использования](#пример-использования)
   * [Пример SQL](#пример-sql)
@@ -36,31 +36,6 @@ YASI - интерпретатор для подмножества SQL
 - Math expressions - поддержка математических выражений
 - Unit and e2e тесты
 
-## Грамматика
-
-```
-stmt_list -> stmt (stmt)*
-stmt -> create_stmt
-        | describe_stmt 
-        | insert_stmt
-        | select_stmt
-create_stmt -> CREATE TABLE ID LPAREN PRIMARY KEY ID (COMMA ID)* RPAREN SEMICOLON
-describe_stmt -> DESCRIBE ID SEMICOLON
-insert_stmt -> INSERT INTO ID SET assignee_sub_stmt (assignee_sub_stmt)* SEMICOLON
-select_stmt -> SELECT select_expr SEMICOLON
-select_expr -> expr 
-               | ID (COMMA ID)* FROM ID (WHERE assignee_sub_stmt (AND assignee_sub_stmt)* (order_sub_stmt)? (limit_sub_stmt)?)?
-assignee_sub_stmt -> ID EQUALS value
-order_sub_stmt -> ORDER BY ID (ASC | DESC)
-limit_sub_stmt -> LIMIT NUMBER
-value -> INT 
-         | STRING
-expr -> term ((PLUS | MINUS) term)*
-term -> factor ((MUL | DIV) factor)*
-factor -> INT 
-          | LPAREN expr RPAREN
-```
-
 ## Как это работает
 
 ### Основные понятия
@@ -71,7 +46,7 @@ factor -> INT
 
 #### Frontend
 
-[Чем занимается Frontend?](https://ps-group.github.io/compilers/what_is_frontend)
+Чем занимается [Frontend?](https://ps-group.github.io/compilers/what_is_frontend)
  - Получает на вход исходный текст программы
  - Проверяет текст на ошибки
  - Строит [Абстрактное Синтаксическое Дерево](https://ps-group.github.io/compilers/ast.html), хранящее логическую модель исхожного файла
@@ -79,12 +54,20 @@ factor -> INT
 В общем случае Frontend имеет 3 компонента: лексический, синтаксический, семантический анализатор
 
 **Лексический анализатор** -  разбивает хаотичный поток входящих символов на лексемы. Он выделяет из исходного текста слова, числа, строковые константы, знаки операций и превращает их в атомарные сущности, с которыми далее удобно работать
+
 **Синтаксический анализатор** - проверяет, что набор лексем, которые дал ему лексический анализатор является осмысленным, что перед нами программа, а не бессмысленный набор букв. Далее формируется AST
+
+Чтобы понимать "смысл" текста и построить дерево - нужно разбить программу на минимальные логические блоки. Эти блоки описываются [грамматикой языка](https://ps-group.github.io/compilers/grammars.html).
+
+Грамматика - набор рекурсивных правил по которым строятся любые выражения в языке
+
 **Семантический анализатор** - проверяет программу на наличие семантических ошибок
+
+
 
 #### Backend
 
-[Чем занимается Backend?](https://ps-group.github.io/compilers/what_is_backend)
+Чем занимается [Backend?](https://ps-group.github.io/compilers/what_is_backend)
  - Получает на вход Абстрактное Синтаксическое Дерево
  - Backend создаёт на выходе машинный код. Это промежуточный код, который может быть исполнен на процессоре, либо на виртуальной машине
 
@@ -109,6 +92,31 @@ factor -> INT
    В итоге для каждого правила он создает AST-ноду.
    Если не может распарсить правило грамматики, то отдает ошибку с указанием того какой токен ожидается и какой токен ошибочный
  - Nodes - реализация AST дерева. Для каждой сущности создается своя нода.
+
+##### Грамматика
+
+```
+stmt_list -> stmt (stmt)*
+stmt -> create_stmt
+        | describe_stmt 
+        | insert_stmt
+        | select_stmt
+create_stmt -> CREATE TABLE ID LPAREN PRIMARY KEY ID (COMMA ID)* RPAREN SEMICOLON
+describe_stmt -> DESCRIBE ID SEMICOLON
+insert_stmt -> INSERT INTO ID SET assignee_sub_stmt (assignee_sub_stmt)* SEMICOLON
+select_stmt -> SELECT select_expr SEMICOLON
+select_expr -> expr 
+               | ID (COMMA ID)* FROM ID (WHERE assignee_sub_stmt (AND assignee_sub_stmt)* (order_sub_stmt)? (limit_sub_stmt)?)?
+assignee_sub_stmt -> ID EQUALS value
+order_sub_stmt -> ORDER BY ID (ASC | DESC)
+limit_sub_stmt -> LIMIT NUMBER
+value -> INT 
+         | STRING
+expr -> term ((PLUS | MINUS) term)*
+term -> factor ((MUL | DIV) factor)*
+factor -> INT 
+          | LPAREN expr RPAREN
+```
 
 #### Интерпретация логики ####
 За эту часть отвечают сущности: Interpreter, Storage, Table
